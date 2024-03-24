@@ -1,8 +1,6 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize};
 use serde_json::{json, Value};
 use simple_logger::SimpleLogger;
-use std::collections::HashMap;
-use rand::prelude::*;
 use aws_config::load_from_env;
 use aws_sdk_dynamodb::{Client, model::AttributeValue};
 use lambda_runtime::{LambdaEvent, Error as LambdaError, service_fn};
@@ -32,8 +30,8 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, LambdaError> {
     let config = load_from_env().await;
     let client = Client::new(&config);
 
-    let name = post_new_info(&client, request.id, request.name, request.age, request.gender).await?;
-    Ok(json!({"name":"name"}))
+    post_new_info(&client, request.id, request.name, request.age, request.gender).await?;
+    Ok(json!({"name":"Data Added Successfully"}))
     //Ok(json!({ "name": request.name, "address": request.address, "nationality": request.nationality, "status": "success" }))
 }
 
