@@ -1,10 +1,9 @@
 # Serverless Rust Microservice
-[![pipeline status](https://gitlab.com/dukeaiml/IDS721/rg361_wk02/badges/main/pipeline.svg)](https://gitlab.com/dukeaiml/IDS721/rg361_wk02/-/commits/main)
+[![CI/CD](https://github.com/nogibjj/IDS-721_rg361_week-05/actions/workflows/cicd.yml/badge.svg)](https://github.com/nogibjj/IDS-721_rg361_week-05/actions/workflows/cicd.yml)
 
 ## Overview
 
-This simple AWS Lambda funtion takes in 2 input parameters and returns the first value raised to the second value.  
-The fuctions uses AWS API Gateway as the trigger and returns the result in JSON format.
+This simple AWS Lambda funtion takes in input from the user in JSON format and uploads the Data to ``DynamoDB`` table in AWS.
 
 The function is programmed in ``Rust`` and is deployed using ``Cargo Lambda`` and ``AWS CLI``.
 
@@ -16,9 +15,20 @@ The function is tested in the AWS Lambda console with the following input parame
 
 ![AWS Lambda Function](./resources/test_input.png)
 
-The funtion returns the output as expected:
+Lambda Function successfull execution response is shown below:
 
 ![AWS Lambda Function](./resources/test_response.png)
+
+The data is successfully uploaded to the DynamoDB table as shown below:
+
+![AWS Lambda Function](./resources/dynamodb.png)
+
+## Prior Setup
+1. Create a DynamoDB table in AWS with the desired configuration.
+2. Create an IAM role with the required permissions to access the DynamoDB table.  
+    find the policy used in this project below:
+
+    ![AWS Lambda Function](./resources/iam_policy.png)
 
 ## Development
 
@@ -42,7 +52,7 @@ The funtion returns the output as expected:
     cargo lambda build
     ```
     ```bash
-    cargo lambda deploy
+    cargo lambda deploy --iam-role <role_arn>
     ```
     ![AWS Lambda Function](./resources/deploy.png)
 
