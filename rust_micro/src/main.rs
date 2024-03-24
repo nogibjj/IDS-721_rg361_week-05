@@ -1,9 +1,9 @@
-use serde::{Deserialize};
+use aws_config::load_from_env;
+use aws_sdk_dynamodb::{model::AttributeValue, Client};
+use lambda_runtime::{service_fn, Error as LambdaError, LambdaEvent};
+use serde::Deserialize;
 use serde_json::{json, Value};
 use simple_logger::SimpleLogger;
-use aws_config::load_from_env;
-use aws_sdk_dynamodb::{Client, model::AttributeValue};
-use lambda_runtime::{LambdaEvent, Error as LambdaError, service_fn};
 
 // write a function to post new information to AWS DynamoDB
 
@@ -23,26 +23,39 @@ async fn main() -> Result<(), LambdaError> {
     Ok(())
 }
 
-
 async fn handler(event: LambdaEvent<Value>) -> Result<Value, LambdaError> {
     let request: Request = serde_json::from_value(event.payload)?;
 
     let config = load_from_env().await;
     let client = Client::new(&config);
 
-    post_new_info(&client, request.id, request.name, request.age, request.gender).await?;
+    post_new_info(
+        &client,
+        request.id,
+        request.name,
+        request.age,
+        request.gender,
+    )
+    .await?;
     Ok(json!({"name":"Data Added Successfully"}))
     //Ok(json!({ "name": request.name, "address": request.address, "nationality": request.nationality, "status": "success" }))
 }
 
-async fn post_new_info(client: &Client, id: Option<String>, name: Option<String>, age: Option<String>, gender: Option<String>) -> Result<(), LambdaError> {
+async fn post_new_info(
+    client: &Client,
+    id: Option<String>,
+    name: Option<String>,
+    age: Option<String>,
+    gender: Option<String>,
+) -> Result<(), LambdaError> {
     let table_name = "IDS-721"; // Make sure this matches your DynamoDB table name
     let id_av = AttributeValue::S(id.expect("REASON"));
     let name_av = AttributeValue::S(name.expect("REASON"));
     let age_av = AttributeValue::S(age.expect("REASON"));
     let gender_av = AttributeValue::S(gender.expect("REASON"));
 
-    client.put_item()
+    client
+        .put_item()
         .table_name(table_name)
         .item("id", id_av)
         .item("name", name_av)
